@@ -15,11 +15,18 @@
                     class="handle-del mr10"
                     @click="delAllSelection"
                 >批量删除</el-button>
-                <el-select v-model="query.address" placeholder="地址" class="handle-select mr10">
-                    <el-option key="1" label="广东省" value="广东省"></el-option>
-                    <el-option key="2" label="湖南省" value="湖南省"></el-option>
+                <el-input v-model="query.bankId" placeholder="机构编号" class="handle-input mr10"></el-input>
+                <el-select v-model="options.value + '-' + options.label" placeholder="请选择机构" class="handle-select mr10">
+                     <el-option :value="options.value" :label="options.label"  style="height: auto">
+                        <el-tree
+                            :data="treeDate"
+                            default-expand-all
+                            @node-click="handleNodeClick"
+                            ref="tree">
+                        </el-tree>
+                    </el-option>
                 </el-select>
-                <el-input v-model="query.name" placeholder="机构名称" class="handle-input mr10"></el-input>
+                
                 <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
             </div>
             <el-table
@@ -76,10 +83,10 @@
         <!-- 编辑弹出框 -->
         <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
             <el-form ref="form" :model="form" label-width="70px">
-                <el-form-item label="用户名">
+                <el-form-item label="机构名称">
                     <el-input v-model="form.name"></el-input>
                 </el-form-item>
-                <el-form-item label="地址">
+                <el-form-item label="所属机构">
                     <el-input v-model="form.address"></el-input>
                 </el-form-item>
             </el-form>
@@ -92,18 +99,24 @@
 </template>
 
 <script>
-import { fetchBankData } from '../../../api/index';
+import { fetchBankData , getBankTree} from '../../../api/index';
 export default {
     name: 'basetable',
     data() {
         return {
             query: {
-                chsName: '',
+                bankId: '',
                 name: '',
                 pageIndex: 1,
                 pageSize: 5
             },
+            options:{
+                value:'',
+                label:''
+            },
             tableData: [],
+            treeDate: [],
+           
             multipleSelection: [],
             delList: [],
             editVisible: false,
@@ -115,6 +128,7 @@ export default {
     },
     created() {
         this.getData();
+        this.getTreeData();
     },
     methods: {
         // 获取 easy-mock 的模拟数据
@@ -125,10 +139,22 @@ export default {
                 this.pageTotal = res.pageSize || 50;
             });
         },
+         getTreeData() {
+            getBankTree().then(res => {
+                console.log(res);
+                this.treeDate = res.data;
+               
+            });
+        },
         // 触发搜索按钮
         handleSearch() {
             this.$set(this.query, 'pageIndex', 1);
             this.getData();
+        },
+        handleNodeClick(data) {
+            console.log(data);
+            this.options.value=data.id;
+            this.options.label=data.label;
         },
         // 删除操作
         handleDelete(index, row) {
@@ -183,11 +209,11 @@ export default {
 }
 
 .handle-select {
-    width: 120px;
+    width: 170px;
 }
 
 .handle-input {
-    width: 300px;
+    width: 120px;
     display: inline-block;
 }
 .table {

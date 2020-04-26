@@ -15,3 +15,10 @@ export const fetchBankData = query => {
         params: query
     });
 };
+
+export const getBankTree = () => {
+    return request({
+        url: './bankTree.json',
+        method: 'get'
+    });
+};
