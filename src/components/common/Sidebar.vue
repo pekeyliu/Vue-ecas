@@ -66,7 +66,7 @@ export default {
                             title: '机构管理'
                         },
                         {
-                            index: 'table',
+                            index: 'userInfo',
                             title: '用户管理'
                         },
                         {

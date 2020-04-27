@@ -20,9 +20,24 @@ export default new Router({
                     meta: { title: '机构管理' }
                 },
                 {
+                    path: '/userInfo',
+                    component: () => import(/* webpackChunkName: "table" */ '../components/page/ecas/UserInfo.vue'),
+                    meta: { title: '用户管理' }
+                },
+                {
+                    path: '/roleInfo',
+                    component: () => import(/* webpackChunkName: "table" */ '../components/page/ecas/RoleInfo.vue'),
+                    meta: { title: '角色管理' }
+                },
+                {
+                    path: '/logSearch',
+                    component: () => import(/* webpackChunkName: "table" */ '../components/page/ecas/LogInfo.vue'),
+                    meta: { title: '日志查询' }
+                },
+                {
                     path: '/blank',
                     component: () => import(/* webpackChunkName: "dashboard" */ '../components/page/blank.vue'),
-                    meta: { title: '空白页' }
+                    meta: { title: '首页' }
                 },
                 {
                     path: '/dashboard',

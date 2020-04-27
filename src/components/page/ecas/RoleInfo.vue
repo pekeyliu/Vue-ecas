@@ -3,31 +3,30 @@
         <div class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item>
-                    <i class="el-icon-lx-cascades"></i> 用户信息维护管理
+                    <i class="el-icon-lx-cascades"></i> 角色信息维护管理
                 </el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <div class="container">
             <div class="handle-box">
-                <el-button
-                    size="mini"
-                    type="primary"
-                    icon="el-icon-delete"
-                    class="handle-del mr10"
-                    @click="delAllSelection"
-                >批量删除</el-button>
-                <el-select v-model="query.address" size="mini" placeholder="地址" class="handle-select mr10">
-                    <el-option key="1" label="广东省" value="广东省"></el-option>
-                    <el-option key="2" label="湖南省" value="湖南省"></el-option>
+                <el-input v-model="query.name" size="mini" placeholder="角色名称" class="handle-input mr10"></el-input>
+                <el-select v-model="query.state" size="mini" placeholder="角色状态" class="handle-select mr10">
+                    <el-option key="1" label="启用" value="启用"></el-option>
+                    <el-option key="2" label="禁用" value="禁用"></el-option>
                 </el-select>
-                <el-input v-model="query.name" size="mini" placeholder="用户名" class="handle-input mr10"></el-input>
+                <el-select v-model="query.productName" size="mini" placeholder="产品名称" class="handle-select mr10">
+                    <el-option key="1" label="交易管理" value="交易管理"></el-option>
+                    <el-option key="2" label="结算管理" value="结算管理"></el-option>
+                    <el-option key="3" label="系统管理" value="系统管理"></el-option>
+                    <el-option key="4" label="风控管理" value="风控管理"></el-option>
+                </el-select>
                 <el-button type="primary" size="mini" icon="el-icon-search" @click="handleSearch">搜索</el-button>
             </div>
             <div class="handle-box">
                 <el-button type="primary" size="mini" icon="el-icon-circle-plus-outline" @click="addUser">新增</el-button>
-                <el-button type="danger" size="mini" icon="el-icon-key" @click="handleSearch">锁定</el-button>
-                <el-button type="primary" size="mini" icon="el-icon-refresh-righ" @click="handleSearch">重置密码</el-button>
-                <el-button type="warning" size="mini" icon="el-icon-s-check" @click="handleSearch">分配角色</el-button>
+                <el-button type="primary" size="mini" icon="el-icon-edit" @click="handleSearch">修改</el-button>
+                <el-button type="danger" size="mini" icon="el-icon-refresh-righ" @click="handleSearch">禁用</el-button>
+                <el-button type="warning" size="mini" icon="el-icon-s-check" @click="openAuthorityList">权限分配</el-button>
             </div>
             <el-table
                 :data="tableData"
@@ -39,31 +38,29 @@
                 @selection-change="handleSelectionChange"
             >
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
-                <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
-                <el-table-column prop="name" label="用户名"></el-table-column>
-                <el-table-column label="账户余额">
-                    <template slot-scope="scope">￥{{scope.row.money}}</template>
-                </el-table-column>
-                <el-table-column label="头像(查看大图)" align="center">
-                    <template slot-scope="scope">
-                        <el-image
-                            class="table-td-thumb"
-                            :src="scope.row.thumb"
-                            :preview-src-list="[scope.row.thumb]"
-                        ></el-image>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="bankName" label="所属分行"></el-table-column>
-                <el-table-column prop="address" label="地址"></el-table-column>
-                <el-table-column label="状态" align="center">
+                <el-table-column prop="roleId" label="用户编号" align="center"></el-table-column>
+                <el-table-column prop="code" label="产品名称" align="center"></el-table-column>
+                <el-table-column prop="name" label="角色名称"></el-table-column>
+                <el-table-column label="角色状态" align="center">
                     <template slot-scope="scope">
                         <el-tag
-                            :type="scope.row.state==='启用'?'success':(scope.row.state==='停用'?'danger':'')"
-                        >{{scope.row.state}}</el-tag>
+                            :type="scope.row.enabledDisplay==='启用'?'success':(scope.row.enabledDisplay==='禁用'?'danger':'')"
+                        >{{scope.row.enabledDisplay}}</el-tag>
                     </template>
                 </el-table-column>
-
-                <el-table-column prop="date" label="注册时间"></el-table-column>
+                <el-table-column
+                    prop="typeDisplay"
+                    label="角色类型"
+                    width="100"
+                    :filters="[{ text: '柜员端', value: '柜员端' }, { text: '客户经理端', value: '客户经理端' },{ text: '分行端', value: '分行端' },{ text: '总行端', value: '总行端' }]"
+                    :filter-method="filterTag"
+                    filter-placement="bottom-end">
+                    <template slot-scope="scope">
+                        <el-tag
+                        :type="scope.row.typeDisplay === '柜员端' ? 'primary' : 'success'"
+                        disable-transitions>{{scope.row.typeDisplay}}</el-tag>
+                    </template>
+                </el-table-column>
                 <el-table-column label="操作" width="180" align="center">
                     <template slot-scope="scope">
                         <el-button
@@ -109,7 +106,7 @@
         </el-dialog>
 
         <!-- 新增弹出框 -->
-        <el-dialog title="新增用户" :visible.sync="addVisible" width="30%">
+        <el-dialog title="新增权限" :visible.sync="addVisible" width="30%">
             <el-form ref="form" :model="form" label-width="70px">
                 <el-form-item label="用户名" size="mini"> 
                     <el-input v-model="form.name" size="mini"></el-input>
@@ -120,17 +117,7 @@
                  <el-form-item label="状态" size="mini">
                     <el-switch v-model="form.state" ></el-switch>
                 </el-form-item>
-                 <el-form-item label="上传头像" size="mini">
-                    <el-upload
-                        class="avatar-uploader"
-                        action="https://jsonplaceholder.typicode.com/posts/"
-                        :show-file-list="false"
-                        :on-success="handleAvatarSuccess"
-                        :before-upload="beforeAvatarUpload">
-                        <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                    </el-upload>
-                 </el-form-item>
+                
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="editVisible = false" size="mini">取 消</el-button>
@@ -138,17 +125,39 @@
             </span>
         </el-dialog>
 
+        <!-- 权限列表弹出框 -->
+        <el-dialog title="权限列表" :visible.sync="authorVisible" width="30%" >
+            <el-form ref="form" :model="form" label-width="70px">
+                <ul class="infinite-list" style="overflow:auto">
+                    <el-tree
+                        :data="authorityList"
+                        show-checkbox
+                        node-key="description"
+                        default-expand-all
+                        :props="defaultProps"
+                        :default-checked-keys="checkedArr"
+                        ref="tree">
+                    </el-tree>
+                </ul>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="authorVisible = false" size="mini">取 消</el-button>
+                <el-button type="primary" @click="saveEdit" size="mini">确 定</el-button>
+            </span>
+            
+        </el-dialog>
+
     </div>
 </template>
 
 <script>
-import { fetchData } from '../../api/index';
+import { fetchRoleData,getAuthorityList } from '../../../api/index';
 export default {
     name: 'basetable',
     data() {
         return {
             query: {
-                address: '',
+                productName: '',
                 name: '',
                 state: '',
                 pageIndex: 1,
@@ -159,25 +168,41 @@ export default {
             delList: [],
             editVisible: false,
             addVisible:false,
+            authorVisible:false,
             pageTotal: 0,
             form: {},
             idx: -1,
             id: -1,
-            imageUrl: ''
+            imageUrl: '',
+            authorityList:[],
+            defaultProps: {
+                children: 'children',
+                label: 'description'
+            },
+            checkedArr:[]
         };
     },
     created() {
         this.getData();
+        this.getAuthoList();
     },
     methods: {
         // 获取 easy-mock 的模拟数据
         getData() {
-            fetchData(this.query).then(res => {
+            fetchRoleData(this.query).then(res => {
                 console.log(res);
-                this.tableData = res.list;
+                this.tableData = res.datals;
                 this.pageTotal = res.pageTotal || 50;
             });
         },
+        getAuthoList(){
+            getAuthorityList().then(res => {
+                console.log(res);
+                this.authorityList = res.rights;
+
+            });
+        },
+        
         // 触发搜索按钮
         handleSearch() {
             this.$set(this.query, 'pageIndex', 1);
@@ -224,27 +249,32 @@ export default {
             this.$message.success(`修改第 ${this.idx + 1} 行成功`);
             this.$set(this.tableData, this.idx, this.form);
         },
+        //打开权限列表
+        openAuthorityList(){
+            
+            for (const data of this.authorityList) {
+                if (data.children) {
+                    console.log(data.children);
+                    for (const child of data.children) {
+                        const checked = child.checked;
+                        if(checked){
+                            // this.$refs.tree.setChecked(child, true, false)  //设置选择                         
+                            this.checkedArr.push(child.description);
+                        }
+                    } 
+                }
+            }
+            
+            
+            this.authorVisible = true;
+        },
+        filterTag(value, row) {
+            return row.tag === value;
+        },
         // 分页导航
         handlePageChange(val) {
             this.$set(this.query, 'pageIndex', val);
             this.getData();
-        },
-        // 图片上传
-        handleAvatarSuccess(res, file) {
-        this.imageUrl = URL.createObjectURL(file.raw);
-        },
-        // 上传前校验
-        beforeAvatarUpload(file) {
-            const isJPG = file.type === 'image/jpeg';
-            const isLt2M = file.size / 1024 / 1024 < 2;
-
-            if (!isJPG) {
-            this.$message.error('上传头像图片只能是 JPG 格式!');
-            }
-            if (!isLt2M) {
-            this.$message.error('上传头像图片大小不能超过 2MB!');
-            }
-            return isJPG && isLt2M;
         }
     }
 };
@@ -279,28 +309,4 @@ export default {
     width: 40px;
     height: 40px;
 }
-
-.avatar-uploader .el-upload {
-    border: 1px dashed #d9d9d9;
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-  }
-  .avatar-uploader .el-upload:hover {
-    border-color: #409EFF;
-  }
-  .avatar-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 60px;
-    height: 60px;
-    line-height: 60px;
-    text-align: center;
-  }
-  .avatar {
-    width: 60px;
-    height: 60px;
-    display: block;
-  }
 </style>
