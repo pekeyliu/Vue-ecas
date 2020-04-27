@@ -3,28 +3,30 @@
         <div class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item>
-                    <i class="el-icon-lx-cascades"></i> 基础表格
+                    <i class="el-icon-lx-cascades"></i> 用户信息维护管理
                 </el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <div class="container">
             <div class="handle-box">
                 <el-button
+                    size="mini"
                     type="primary"
                     icon="el-icon-delete"
                     class="handle-del mr10"
                     @click="delAllSelection"
                 >批量删除</el-button>
-                <el-select v-model="query.address" placeholder="地址" class="handle-select mr10">
+                <el-select v-model="query.address" size="mini" placeholder="地址" class="handle-select mr10">
                     <el-option key="1" label="广东省" value="广东省"></el-option>
                     <el-option key="2" label="湖南省" value="湖南省"></el-option>
                 </el-select>
-                <el-input v-model="query.name" placeholder="用户名" class="handle-input mr10"></el-input>
-                <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
+                <el-input v-model="query.name" size="mini" placeholder="用户名" class="handle-input mr10"></el-input>
+                <el-button type="primary" size="mini" icon="el-icon-search" @click="handleSearch">搜索</el-button>
             </div>
             <el-table
                 :data="tableData"
                 border
+                height="350px"
                 class="table"
                 ref="multipleTable"
                 header-cell-class-name="table-header"
@@ -49,7 +51,7 @@
                 <el-table-column label="状态" align="center">
                     <template slot-scope="scope">
                         <el-tag
-                            :type="scope.row.state==='成功'?'success':(scope.row.state==='失败'?'danger':'')"
+                            :type="scope.row.state==='启用'?'success':(scope.row.state==='停用'?'danger':'')"
                         >{{scope.row.state}}</el-tag>
                     </template>
                 </el-table-column>
@@ -189,7 +191,7 @@ export default {
 
 <style scoped>
 .handle-box {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .handle-select {
@@ -202,7 +204,7 @@ export default {
 }
 .table {
     width: 100%;
-    font-size: 14px;
+    font-size: 12px;
 }
 .red {
     color: #ff0000;

@@ -141,8 +141,8 @@ export default {
     position: relative;
     box-sizing: border-box;
     width: 100%;
-    height: 70px;
-    font-size: 22px;
+    height: 50px;
+    font-size: 18px;
     color: #fff;
 }
 .time{
@@ -151,9 +151,9 @@ export default {
 }
 .currentTime {
     margin: 0px 5px 0px 5px;
-    font-size: 14px;
+    font-size: 12px;
     text-align: center;
-    line-height: 70px;
+    line-height: 50px;
 }
 .collapse-btn {
     float: left;
@@ -172,7 +172,7 @@ export default {
 }
 .header-user-con {
     display: flex;
-    height: 70px;
+    height: 50px;
     align-items: center;
 }
 .btn-fullscreen {

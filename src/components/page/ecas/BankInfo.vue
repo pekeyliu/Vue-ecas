@@ -1,4 +1,4 @@
-<template>
+<template class="font">
     <div>
         <div class="crumbs">
             <el-breadcrumb separator="/">
@@ -12,11 +12,12 @@
                 <el-button
                     type="primary"
                     icon="el-icon-delete"
+                    size="mini"
                     class="handle-del mr10"
                     @click="delAllSelection"
                 >批量删除</el-button>
-                <el-input v-model="query.bankId" placeholder="机构编号" class="handle-input mr10"></el-input>
-                <el-select v-model="options.value + '-' + options.label" placeholder="请选择机构" class="handle-select mr10">
+                <el-input v-model="query.bankId" size="mini" placeholder="机构编号" class="handle-input mr10"></el-input>
+                <el-select v-model="options.label" size="mini" placeholder="请选择机构" class="handle-select mr10">
                      <el-option :value="options.value" :label="options.label"  style="height: auto">
                         <el-tree
                             :data="treeDate"
@@ -27,7 +28,7 @@
                     </el-option>
                 </el-select>
                 
-                <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
+                <el-button type="primary" size="mini" icon="el-icon-search" @click="handleSearch">搜索</el-button>
             </div>
             <el-table
                 :data="tableData"
@@ -203,9 +204,12 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
+.font{
+    font-size: 10px;
+}
 .handle-box {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .handle-select {
@@ -218,7 +222,7 @@ export default {
 }
 .table {
     width: 100%;
-    font-size: 14px;
+    font-size: 12px;
 }
 .red {
     color: #ff0000;
